@@ -47,7 +47,7 @@ class MaterialCollectingEnvironment(Environment):
         # Communication and sensor ranges
         self.communication_range_radius = 250.0
         self.sensor_range_radius = 150.0
-        self.sensor_angle = 90.0
+        self.sensor_angle = 120.0
 
         # Agent colors and opacities
         self.agent_body_color = (200, 0, 0)
@@ -91,7 +91,7 @@ class MaterialCollectingEnvironment(Environment):
 
         # Agent time and experiment end
         self.elapsed_agent_time = 0
-        self.elapsed_agent_time_end = 100
+        self.elapsed_agent_time_end = 200
         self.collected_materials_time_series = numpy.zeros((self.elapsed_agent_time_end, 1))
         self.collected_materials_time_series_for_each_agent = None
         self.collected_materials_sum_for_each_agent = []
@@ -128,14 +128,16 @@ class MaterialCollectingEnvironment(Environment):
                 if action == MaterialCollectingAgentParameters.ACT_GO_FORWARD:
                     direction = self.agent_directions[index]
                     dir_vec = numpy.array([numpy.sin(numpy.deg2rad(direction)),numpy.cos(numpy.deg2rad(direction))])
-                    mag = dt * agent.params.velocity
+                    velocity = numpy.clip(agent.params.velocity, -MaterialCollectingAgentParameters.MAX_VELOCITY, MaterialCollectingAgentParameters.MAX_VELOCITY)
+                    mag = dt * velocity
                     dir_vec = dir_vec *  mag
                     
                     next_pos = self.agent_positions[index] + dir_vec
 
                 elif action == MaterialCollectingAgentParameters.ACT_ROTATE:
                     direction = self.agent_directions[index]
-                    next_dir = direction + dt * agent.params.angular_velocity
+                    angular_velocity = numpy.clip(agent.params.angular_velocity, -MaterialCollectingAgentParameters.MAX_ANGULAR_VELOCITY, MaterialCollectingAgentParameters.MAX_ANGULAR_VELOCITY)
+                    next_dir = direction + dt * angular_velocity
                     self.agent_directions[index] = next_dir
                 elif action == MaterialCollectingAgentParameters.ACT_STANDSTILL:
                     pass
@@ -300,6 +302,7 @@ class MaterialCollectingEnvironment(Environment):
 
                         ##material
                         mat_dist_min = self.sensor_range_radius
+                        target_mat_radius = self.material_radius_max
                         for mat, index2 in zip(self.material_shapes, range(len(self.material_shapes))):
                             mat_radius = mat[0].radius
                             mat_x = mat[0].x
@@ -310,12 +313,14 @@ class MaterialCollectingEnvironment(Environment):
                             if angle <= delta_theta_rad/2:###sensor direction is center of sensor division
                                 ##material center is between its sensor range angle. Next, check the distance.
                                 distance = numpy.linalg.norm(pos_diff)
-                                mat_dist_min = min(mat_dist_min, distance)
+                                if distance < mat_dist_min:
+                                    mat_dist_min = distance
+                                    target_mat_radius = mat_radius
 
                         if agent.params.sensor_object_distance[i] > mat_dist_min:
                             agent.params.sensor_object_distance[i] = mat_dist_min
                             agent.params.sensor_object_type[i] = MaterialCollectingAgentParameters.SENSE_MATERIAL
-                            agent.params.sensor_object_attribute[i] = mat_radius
+                            agent.params.sensor_object_attribute[i] = target_mat_radius
 
                         ##agent
                         agent_dist_min = self.sensor_range_radius

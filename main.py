@@ -5,9 +5,7 @@ import random
 from material_collecting_environment import MaterialCollectingEnvironment
 from material_collecting_agent import MaterialCollectingAgent
 from my_material_collecting_agent import MyMaterialCollectingAgent
-from my_material_collecting_agent_typeA import MyMaterialCollectingAgentTypeA
-from my_material_collecting_agent_typeB import MyMaterialCollectingAgentTypeB
-from my_material_collecting_agent_typeC import MyMaterialCollectingAgentTypeC
+
 
 frame_x, frame_y = 800, 600
 

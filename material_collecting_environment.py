@@ -117,6 +117,9 @@ class MaterialCollectingEnvironment(Environment):
 
         if self.elapsed_agent_time < self.elapsed_agent_time_end:
 
+            #prepare collision detection status for agents as an array
+            self.agent_collision_status = numpy.full(len(self.agents), MaterialCollectingAgentParameters.SENSE_NOT_COLLIDED)
+
             for agent, index in zip(self.agents, range(len(self.agent_positions))):
                 action = agent.params.action
 
@@ -150,12 +153,17 @@ class MaterialCollectingEnvironment(Environment):
                         dist = numpy.linalg.norm(next_pos - pos2)
                         if dist <= self.agent_size * 2:
                             next_pos = prev_pos
+                            ##update collision status
+                            self.agent_collision_status[index] = MaterialCollectingAgentParameters.SENSE_COLLIDED
+                            self.agent_collision_status[index2] = MaterialCollectingAgentParameters.SENSE_COLLIDED
 
                 #### collision check between current agent and obstacles
                 for obst, index2 in zip(self.object_shapes, range(len(self.object_shapes))):
                     collis = geo.circle_rect_collision(next_pos[0], next_pos[1], self.agent_size, obst.x, obst.y, obst.width, obst.height)
                     if collis:
                         next_pos = prev_pos
+                        ##update collision status
+                        self.agent_collision_status[index] = MaterialCollectingAgentParameters.SENSE_COLLIDED
                 
 
                 self.agent_positions[index] = next_pos
@@ -248,7 +256,7 @@ class MaterialCollectingEnvironment(Environment):
 
                 ## update material's opacity
                 for mat, index3 in zip(self.material_shapes, range(len(self.material_shapes))):
-                    mat[0].opacity = (float(self.material_amounts[index3]) / self.material_amount_max) * (self.material_opacity_max - self.material_opacity_min) + self.material_opacity_min
+                    mat[0].opacity = int((float(self.material_amounts[index3]) / self.material_amount_max) * (self.material_opacity_max - self.material_opacity_min)) + self.material_opacity_min
 
                 ## update communication information between agents
                 for agent, index in zip(self.agents, range(len(self.agent_positions))):
@@ -267,8 +275,13 @@ class MaterialCollectingEnvironment(Environment):
                         agent.params.sensor_object_type[i] = MaterialCollectingAgentParameters.SENSE_NONE
                         agent.params.sensor_object_attribute[i] = 0
 
+                        agent.params.collision_sensor = MaterialCollectingAgentParameters.SENSE_NOT_COLLIDED
+
                     ## pass sensor data to the agent
                     ###
+                    ## collision information
+                    agent.params.collision_sensor = self.agent_collision_status[index]
+
                     ##get agent's forward vector
                     position = self.agent_positions[index]
                     direction_angle = self.agent_directions[index]
@@ -423,7 +436,7 @@ class MaterialCollectingEnvironment(Environment):
 
             agent_shape4 = shapes.Circle(agent_pos[0], agent_pos[1], self.communication_range_radius, color=self.agent_com_range_color, batch=self.batch, group=self.main_group)
 
-            agent_shape5 = shapes.Sector(agent_pos[0], agent_pos[1], self.sensor_range_radius, angle=numpy.deg2rad(self.sensor_angle), start_angle=numpy.deg2rad(90-self.sensor_angle/2), color=self.agent_sensor_range_color,batch=self.batch, group=self.main_group)
+            agent_shape5 = shapes.Sector(agent_pos[0], agent_pos[1], self.sensor_range_radius, angle=self.sensor_angle, start_angle=90-self.sensor_angle/2, color=self.agent_sensor_range_color,batch=self.batch, group=self.main_group)
 
             agent_tag = pyglet.text.Label("ID:" + str(agent.id), font_name='Times New Roman', font_size=14, x=agent_pos[0], y=agent_pos[1] + self.agent_size*2,anchor_x='center', anchor_y='center',batch=self.batch, group=self.main_group)
             
@@ -472,7 +485,7 @@ class MaterialCollectingEnvironment(Environment):
         material_radius = numpy.random.random() * (self.material_radius_max - self.material_radius_min) + self.material_radius_min
         material_amount = numpy.random.randint(self.material_amount_min, self.material_amount_max)
         mat_shape1 = shapes.Circle(mat_pos_x, mat_pos_y, material_radius, color=self.material_color, batch=self.batch, group=self.background_group)
-        mat_shape1.opacity = (float(material_amount) / self.material_amount_max) * (self.material_opacity_max - self.material_opacity_min) + self.material_opacity_min
+        mat_shape1.opacity = int((float(material_amount) / self.material_amount_max) * (self.material_opacity_max - self.material_opacity_min)) + self.material_opacity_min
         mat_shape2 = shapes.Circle(mat_pos_x, mat_pos_y, self.material_center_radius, color=self.material_center_color, batch=self.batch, group=self.background_group)
         mat_shape2.opacity = self.material_center_opacity
         self.material_shapes.append([mat_shape1, mat_shape2])

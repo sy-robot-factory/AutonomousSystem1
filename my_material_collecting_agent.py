@@ -1,6 +1,7 @@
 from material_collecting_agent import MaterialCollectingAgent
 from material_collecting_agent import MaterialCollectingAgentParameters
 import random
+import numpy
 
 class MyMaterialCollectingAgent(MaterialCollectingAgent):
 
@@ -34,7 +35,29 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
             c_message += "I'm standing still"
         # set the communication message
         self.params.communication_message = c_message
-        # read the messages received from other agents
-        if len(self.params.received_messages) > 0:
-            pass
+        
+
+        #print sensor status (ID:0 only)
+        if self.id == 0:
+            print_str = "-------------------------------\n"
+            print_str += "ID" + str(self.id) + "\n"
+            print_str += "Sensor object type:" + numpy.array2string(self.params.sensor_object_type, separator=',')
+            print_str += "\n"
+            print_str += "Sensor object distance:" + numpy.array2string(self.params.sensor_object_distance, separator=',')
+            print_str += "\n"
+            print_str += "Sensor object attribute:" + numpy.array2string(self.params.sensor_object_attribute, separator=',')
+            print_str += "\n"
+            print_str += "Collision:" + str(self.params.collision_sensor)
+            print_str += "\n"
+            print_str += "Action:" + str(self.params.action)
+            print_str += "\n"
+            print_str += "Velocity:" + str(self.params.velocity)
+            print_str += "\n"
+            print_str += "Angular velocity:" + str(self.params.angular_velocity)
+            print_str += "\n"
+            print_str += "Communication message:" + self.params.communication_message
+            print_str += "\n"
+            print_str += "Recieved messages:" + ''.join(self.params.received_messages)
+            print(print_str)
+      
 

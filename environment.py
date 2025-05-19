@@ -18,9 +18,15 @@ class Environment:
         self.info_tags = []
         self.request_reset = False
 
-        self.background_group = pyglet.graphics.OrderedGroup(0)
-        self.main_group = pyglet.graphics.OrderedGroup(1)
-        self.foreground_group = pyglet.graphics.OrderedGroup(2)
+        #pyglet ver. 1.5
+        #self.background_group = pyglet.graphics.OrderedGroup(0)
+        #self.main_group = pyglet.graphics.OrderedGroup(1)
+        #self.foreground_group = pyglet.graphics.OrderedGroup(2)
+        
+        #pyglet ver. 2>
+        self.background_group = pyglet.graphics.Group(order=0)
+        self.main_group = pyglet.graphics.Group(order=1)
+        self.foreground_group = pyglet.graphics.Group(order=2)
 
 
     def register_shapes(self, batch):

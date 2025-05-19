@@ -19,6 +19,9 @@ class MaterialCollectingAgentParameters():
     SENSE_OBSTACLE = 2
     SENSE_MATERIAL = 3
 
+    SENSE_COLLIDED = 1
+    SENSE_NOT_COLLIDED = 0
+
     NUM_SENSOR = 5
 
 
@@ -35,6 +38,9 @@ class MaterialCollectingAgentParameters():
         self.sensor_object_type = numpy.full(MaterialCollectingAgentParameters.NUM_SENSOR, MaterialCollectingAgentParameters.SENSE_NONE)
         self.sensor_object_distance = numpy.full(MaterialCollectingAgentParameters.NUM_SENSOR, 0.0)
         self.sensor_object_attribute = numpy.full(MaterialCollectingAgentParameters.NUM_SENSOR, 0.0)
+
+        ## add collision sensor
+        self.collision_sensor = MaterialCollectingAgentParameters.SENSE_NOT_COLLIDED
 
         #variables for communication
         self.communication_message = ""

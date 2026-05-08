@@ -1,2 +1,8 @@
 ﻿*.code-workspace
 **/__pycache__/**
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/

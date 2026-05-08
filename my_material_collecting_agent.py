@@ -7,11 +7,20 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
 
     def __init__(self) -> None:
         super().__init__()
-        pass
+        self.count = 0
 
     def act(self):
+
+        if self.params.collision_sensor == MaterialCollectingAgentParameters.SENSE_COLLIDED:
+            self.params.action = MaterialCollectingAgentParameters.ACT_ROTATE
+            self.params.angular_velocity = 90
+        else:
+            self.params.action = MaterialCollectingAgentParameters.ACT_GO_FORWARD
+            self.params.velocity = 100
+
         """
         A function that determines the action of the agent, sets its parameters accordingly, and updates the communication message.
+        """
         """
         # determine the action of the agent
         action = random.randint(0, MaterialCollectingAgentParameters.NUM_ACT-2)
@@ -59,5 +68,5 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
             print_str += "\n"
             print_str += "Recieved messages:" + ''.join(self.params.received_messages)
             print(print_str)
-      
+      """
 

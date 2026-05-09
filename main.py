@@ -16,8 +16,8 @@ image = pyglet.image.SolidColorImagePattern((100,100,100,255)).create_image(fram
 
 f_man = None
 
-auto_executor = False
-double_speed_mode = False
+auto_executor = True
+double_speed_mode = True
 
 class FrameManager:
 

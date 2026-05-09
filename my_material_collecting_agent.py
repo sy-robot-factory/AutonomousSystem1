@@ -21,7 +21,7 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
         """
         A function that determines the action of the agent, sets its parameters accordingly, and updates the communication message.
         """
-        """
+        
         # determine the action of the agent
         action = random.randint(0, MaterialCollectingAgentParameters.NUM_ACT-2)
         self.params.action = action
@@ -43,7 +43,7 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
         elif action == MaterialCollectingAgentParameters.ACT_STANDSTILL:
             c_message += "I'm standing still"
         # set the communication message
-        self.params.communication_message = c_message
+        self.params.communication_message = c_message + "; "
         
 
         #print sensor status (ID:0 only)
@@ -68,5 +68,5 @@ class MyMaterialCollectingAgent(MaterialCollectingAgent):
             print_str += "\n"
             print_str += "Recieved messages:" + ''.join(self.params.received_messages)
             print(print_str)
-      """
+      
 

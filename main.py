@@ -60,6 +60,21 @@ class FrameManager:
                 self.reset_environment()
 
 @window.event
+def on_resize(width, height):
+    # Retinaディスプレイ等から実際の物理ピクセルサイズを取得
+    fb_width, fb_height = window.get_framebuffer_size()
+    
+    # 描画領域（ビューボート）を物理ピクセルの画面いっぱいに広げる
+    window.viewport = (0, 0, fb_width, fb_height)
+
+    # 内部の座標計算（プロジェクション）は，元の800x600のまま処理させる
+    window.projection = pyglet.math.Mat4.orthogonal_projection(0, width, 0, height, -255, 255)
+
+    # デフォルトのresizeイベントを上書き
+    return pyglet.event.EVENT_HANDLED
+
+
+@window.event
 def on_key_press(symbol, modifiers):
     """
     Event handler for key press events.
